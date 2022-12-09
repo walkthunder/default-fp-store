@@ -1,0 +1,84 @@
+on:
+  schedule:
+  - cron: "0 * * * *"
+  
+
+jobs:
+  scrapy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Use Nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+        
+      - id: load-contents
+        uses: maku693/action-puppeteer-script@v0
+        with:
+          script: |
+            const fn = async (domain) => {
+              const page = await browser.newPage();
+              page.setDefaultNavigationTimeout(0);
+              await page.goto('https://ping.chinaz.com/' + domain, {
+                waitUntil: 'networkidle0'
+              });
+              const title = await page.title();
+              console.log('page loaded: ', title);
+              const body = await page.evaluate(() => {
+                const foundTarget = [...document.querySelectorAll(`#ulsumary tr>td[name='fast']`)]
+                  .map(item => item.innerText)
+                  .find(txt => txt !== '-\n-');
+                const list = [ ...document.querySelector(`#speedlist`).children]
+                  .map(dom => {const list = [ ...dom.children]; return [list[1].innerText, list[3].innerText]})
+                  .filter(item => (item[1] !== '超时'))
+                  .map(item => [item[0], item[1].replace(/ms$/, '').replace(/^\</, '')])
+                  .filter(item => (!Number.isNaN(Number(item[1]))))
+                  .sort((a, b) => a[1] - b[1])
+                  .map(item => item[0])
+                  .filter((value, index, self) => {
+                    return self.indexOf(value) === index;
+                  });
+
+                console.log('query result: ', list);
+                return list;
+              });
+              await page.close();
+              console.log('cdn list html: ', body);
+              return [domain, body];
+            }
+
+            const promises = '${{ secrets.TARGET_DOMAINS }}'.split(',').map(domain => {
+              console.log('target domain: ', domain);
+              return fn(domain);
+            });
+            const list = await Promise.all(promises);
+            const resp = {};
+            list.forEach(item => {
+              console.log('item - ', item[0], JSON.stringify(item));
+              Object.assign(resp, {
+                [item[0]]: item[1]
+              })
+            });
+            console.log('resp object - ', JSON.stringify(resp));
+            return resp;
+      - run: echo '${{ steps.load-contents.outputs.result }}' # This will puts `"Example Domain"`
+
+      - name: Overwrite file
+        uses: "DamianReeves/write-file-action@master"
+        with:
+          path: ${{ github.workspace }}/data/ips.json
+          write-mode: overwrite
+          contents: |
+            ${{ steps.load-contents.outputs.result }}
+      
+      - uses: TencentCloud/cos-action@v1
+        with:
+          secret_id: ${{ secrets.TENCENT_SEC_ID }}
+          secret_key: ${{ secrets.TENCENT_SEC_KEY }}
+          cos_bucket: ${{ secrets.COS_BUCKET }}
+          cos_region: ${{ secrets.COS_REGION }}
+          local_path: ${{ github.workspace }}/data
+          remote_path: ''
+          clean: false
