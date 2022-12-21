@@ -12,7 +12,10 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@master
+        with:
+          repository: walkthunder/flashpixel
+          token: ${{ secrets.PAT }}
 
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v3.5.1
