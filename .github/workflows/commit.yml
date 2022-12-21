@@ -118,12 +118,7 @@ jobs:
           # email subject
           subject: CI 通知：${{ github.job }} job of ${{ github.repository }} has ${{ job.status }}
           # email body as text
-          body: |
-            ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
-            PACK MAC   ---> [${{ steps.mac_pack.conclusion }}]
-            UPLOAD MAC ---> [${{ steps.mac_upload.conclusion }}]
-            PACK MAS   ---> [${{ steps.mas_pack.conclusion }}]
-            UPLOAD MAC ---> [${{ steps.mas_upload.conclusion }}]
+          body: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}            PACK MAC   ---> [${{ steps.mac_pack.conclusion }}]            UPLOAD MAC ---> [${{ steps.mac_upload.conclusion }}]            PACK MAS   ---> [${{ steps.mas_pack.conclusion }}]            UPLOAD MAC ---> [${{ steps.mas_upload.conclusion }}]
           # comma-separated string, send email to
           to: ${{ secrets.MAIL_NOTIFY_GROUP }}
           # from email name
