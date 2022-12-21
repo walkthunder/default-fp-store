@@ -77,7 +77,7 @@ jobs:
           FP_PATH: ${{ github.workspace }}/build_fp.provision
           CSC_LINK: ${{ secrets.MAS_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          CSC_NAME: \"Penghui Zheng (97FK37M859)\"
+          CSC_NAME: ${{ secrets.CSC_NAME }}
         run: |
           PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack:mas
 
