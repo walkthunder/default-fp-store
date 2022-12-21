@@ -79,7 +79,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_NAME: \"Penghui Zheng (97FK37M859)\"
         run: |
-          PROVISION_PATH=$FP_PATH npm run pack:mas
+          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack:mas
 
       - run: rm -rf dist/mas/FlashPixel.app/
 
