@@ -47,22 +47,22 @@ jobs:
       - run: npm install
       - run: npm run build
 
-      - name: mac artifact package
-        env:
-          FP_PATH: ${{ github.workspace }}/mac_build_fp.provision
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          CSC_NAME: ${{ secrets.CSC_NAME }}
-        run: |
-          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack
+      # - name: mac artifact package
+      #   env:
+      #     FP_PATH: ${{ github.workspace }}/mac_build_fp.provision
+      #     CSC_LINK: ${{ secrets.CSC_LINK }}
+      #     CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      #     CSC_NAME: ${{ secrets.CSC_NAME }}
+      #   run: |
+      #     PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack
 
-      - name: Upload files to a GitHub release
-        uses: svenstaro/upload-release-action@2.3.0
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dist/FlashPixel.dmg
-          asset_name: FP_MAC.dmg
-          overwrite: true
+      # - name: Upload files to a GitHub release
+      #   uses: svenstaro/upload-release-action@2.3.0
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: dist/FlashPixel.dmg
+      #     asset_name: FP_MAC.dmg
+      #     overwrite: true
 
       - run: rm -rf dist
 
