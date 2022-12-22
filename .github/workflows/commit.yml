@@ -64,7 +64,7 @@ jobs:
           API_KEY_ID: ${{ secrets.API_KEY_ID }}
           API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
         run: |
-          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack
+          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME API_KEY_ID=$API_KEY_ID API_KEY_ISSUER_ID=$API_KEY_ISSUER_ID npm run pack
 
       - name: Upload files to a GitHub release
         id: mac_upload
