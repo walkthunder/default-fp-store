@@ -30,8 +30,8 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         # Import Apple API key for app notarization on macOS
         run: |
-          mkdir -p ~/private_keys/
-          echo '${{ secrets.api_key }}' > ~/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
+          mkdir -p ${{ github.workspace }}/private_keys/
+          echo '${{ secrets.api_key }}' > ${{ github.workspace }}/private_keys/AuthKey_${{ secrets.api_key_id }}.p8
 
       - name: MAS Provision profile setup
         id: mas_profile
@@ -95,7 +95,7 @@ jobs:
           API_KEY_ID: ${{ secrets.API_KEY_ID }}
           API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
         run: |
-          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack:mas
+          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME API_KEY_ID=$API_KEY_ID API_KEY_ISSUER_ID=$API_KEY_ISSUER_ID npm run pack:mas
 
       - run: rm -rf dist/mas/FlashPixel.app/
 
