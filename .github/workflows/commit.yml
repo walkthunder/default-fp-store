@@ -60,6 +60,9 @@ jobs:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_NAME: ${{ secrets.CSC_NAME }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
         run: |
           PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack
 
@@ -88,6 +91,9 @@ jobs:
           CSC_LINK: ${{ secrets.MAS_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_NAME: ${{ secrets.CSC_NAME }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
         run: |
           PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME npm run pack:mas
 
