@@ -9,5 +9,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - env:
-          MESSAGE: action - ${{github.event.action}} | branch - ${{github.event.branch}} | insta - ${{github.event.installation}} | repo - ${{github.event.repository}} | sender - ${{github.event.sender}} | type -  ${{github.event.event_type}} | client_payload - ${{ github.event.client_payload }}
+          MESSAGE: action - ${{github.event.action}} client_payload - ${{ github.event.client_payload.mac }} - ${{ github.event.client_payload.mas }}
         run: echo $MESSAGE
