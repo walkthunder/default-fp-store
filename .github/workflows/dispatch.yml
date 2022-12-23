@@ -3,11 +3,134 @@ name: PackageHook
 on: repository_dispatch
 
 
-jobs:
-  run_if_failure:
-    # if: ${{ !github.event.client_payload.passed }}
-    runs-on: ubuntu-latest
+jobs:  
+  bundle_fp_OSX:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest]
+
     steps:
-      - env:
-          MESSAGE: action - ${{github.event.action}} client_payload - ${{ github.event.client_payload.mac }} - ${{ github.event.client_payload.mas }}
-        run: echo $MESSAGE
+      - name: Check out Git repository
+        id: check_repo
+        uses: actions/checkout@master
+        with:
+          repository: walkthunder/flashpixel
+          token: ${{ secrets.PAT }}
+
+      - name: Install Node.js, NPM and Yarn
+        id: node_setup
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Prepare for app notarization (macOS)
+        id: api_key_setup
+        if: startsWith(matrix.os, 'macos')
+        # Import Apple API key for app notarization on macOS
+        run: |
+          mkdir -p ${{ github.workspace }}/private_keys/
+          echo '${{ secrets.API_KEY }}' > ${{ github.workspace }}/private_keys/AuthKey_${{ secrets.API_KEY_ID }}.p8
+
+      - name: MAS Provision profile setup
+        id: mas_profile
+        env:
+          FP_PATH: ${{ github.workspace }}/build_fp.provision
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode --output $FP_PATH
+
+      - name: MAC Provision profile setup
+        id: mac_profile
+        env:
+          FP_PATH: ${{ github.workspace }}/mac_build_fp.provision
+          MAC_PROVISIONING_PROFILE_BASE64: ${{ secrets.MAC_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          echo -n "$MAC_PROVISIONING_PROFILE_BASE64" | base64 --decode --output $FP_PATH
+
+      - run: npm install
+      - id: build
+        run: npm run build
+
+      - name: mac artifact package
+        if: ${{ github.event.client_payload.mac }}
+        id: mac_pack
+        env:
+          FP_PATH: ${{ github.workspace }}/mac_build_fp.provision
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          CSC_NAME: ${{ secrets.CSC_NAME }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
+        run: |
+          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME API_KEY_ID=$API_KEY_ID API_KEY_ISSUER_ID=$API_KEY_ISSUER_ID npm run pack
+
+      - name: Upload files to a GitHub release
+        if: ${{ github.event.client_payload.mac }}
+        id: mac_upload
+        uses: svenstaro/upload-release-action@2.3.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/FlashPixel.dmg
+          asset_name: FP_MAC.dmg
+          overwrite: true
+
+      - run: rm -rf dist
+
+      - name: Mac Key chain setup
+        id: keychain_setup
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.MAS_CSC_LINK }}
+          p12-password: ${{ secrets.CSC_KEY_PASSWORD }}
+
+      - name: mas artifact package
+        if: ${{ github.event.client_payload.mas }}
+        id: mas_pack
+        env:
+          FP_PATH: ${{ github.workspace }}/build_fp.provision
+          CSC_LINK: ${{ secrets.MAS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          CSC_NAME: ${{ secrets.CSC_NAME }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_KEY_ID: ${{ secrets.API_KEY_ID }}
+          API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
+        run: |
+          PROVISION_PATH=$FP_PATH CSC_LINK=$CSC_LINK CSC_NAME=$CSC_NAME API_KEY_ID=$API_KEY_ID API_KEY_ISSUER_ID=$API_KEY_ISSUER_ID npm run pack:mas
+
+      - run: rm -rf dist/mas/FlashPixel.app/
+
+      - name: Upload files to a GitHub release
+        if: ${{ github.event.client_payload.mas }}
+        id: mas_upload
+        uses: svenstaro/upload-release-action@2.3.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/mas/FlashPixel-mac_store.pkg
+          asset_name: FP_MAS.pkg
+          overwrite: true
+
+      - name: Report result by mail
+        id: notify
+        if: always()
+        uses: dawidd6/action-send-mail@v3.7.1
+        with:
+          # mail server settings
+          server_address: smtp.163.com
+          server_port: 465
+          secure: true
+           # Optional (recommended): mail server username:
+          username: ${{secrets.MAIL_USERNAME}}
+          # Optional (recommended) mail server password:
+          password: ${{secrets.MAIL_PASSWORD}}
+          # email subject
+          subject: CI 通知：${{ github.job }} job of ${{ github.repository }} has ${{ job.status }}
+          # email body as text
+          body: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}            PACK MAC   ---> [${{ steps.mac_pack.conclusion }}]            UPLOAD MAC ---> [${{ steps.mac_upload.conclusion }}]            PACK MAS   ---> [${{ steps.mas_pack.conclusion }}]            UPLOAD MAC ---> [${{ steps.mas_upload.conclusion }}]
+          # comma-separated string, send email to
+          to: ${{ secrets.MAIL_NOTIFY_GROUP }}
+          # from email name
+          from: Github boy
