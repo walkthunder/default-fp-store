@@ -1,4 +1,4 @@
-name: Build/release
+name: PackageHook
 
 on: repository_dispatch
 
@@ -9,5 +9,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - env:
-          MESSAGE: ${{github.event.action}} ${{github.event.branch}} ${{github.event.installation}} ${{github.event.repository}} ${{github.event.sender}} ${{github.event.event_type}} ${{ github.event.client_payload.message }}
+          MESSAGE: action - ${{github.event.action}} | branch - ${{github.event.branch}} | insta - ${{github.event.installation}} | repo - ${{github.event.repository}} | sender - ${{github.event.sender}} | type -  ${{github.event.event_type}} | client_payload - ${{ github.event.client_payload }}
         run: echo $MESSAGE
