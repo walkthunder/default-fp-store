@@ -1,0 +1,13 @@
+name: Build/release
+
+on: repository_dispatch
+
+
+jobs:
+  run_if_failure:
+    # if: ${{ !github.event.client_payload.passed }}
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          MESSAGE: ${{github.event.action}} ${{github.event.branch}} ${{github.event.installation}} ${{github.event.repository}} ${{github.event.sender}} ${{github.event.event_type}} ${{ github.event.client_payload.message }}
+        run: echo $MESSAGE
