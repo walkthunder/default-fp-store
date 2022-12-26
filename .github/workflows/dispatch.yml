@@ -94,7 +94,7 @@ jobs:
           FP_PATH: ${{ github.workspace }}/build_fp.provision
           CSC_LINK: ${{ secrets.MAS_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          CSC_NAME: ${{ secrets.CSC_NAME }}
+          CSC_NAME: ${{ secrets.MAS_CSC_NAME }}
           API_KEY: ${{ secrets.API_KEY }}
           API_KEY_ID: ${{ secrets.API_KEY_ID }}
           API_KEY_ISSUER_ID: ${{ secrets.API_KEY_ISSUER_ID }}
