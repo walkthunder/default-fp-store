@@ -14,8 +14,8 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: WeChat Work notification by template_card.text_notice
-        uses: chf007/action-wechat-work@master
+      - name: GA薅羊毛专项——企业微信webhook
+        uses: walkthunder/action-wecom-webhook@v1.1.0
         env:
           WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
         with:
