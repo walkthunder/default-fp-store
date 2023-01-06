@@ -48,11 +48,11 @@ jobs:
                         "type":1,
                         "url": "${{ github.repository }}",
                         "title":"Github Repo Link"
-                    },
+                    }
                 ],
                 "card_action":{
                     "type":1,
-                    "url": "${{ github.repository }}",
+                    "url": "${{ github.repository }}"
                 }
             }
         }'
