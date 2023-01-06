@@ -25,7 +25,7 @@ jobs:
             "template_card":{
                 "card_type":"text_notice",
                 "source":{
-                    "desc": ${{ github.repository }},
+                    "desc": "${{ github.repository }}",
                     "desc_color":0
                 },
                 "main_title":{
@@ -33,26 +33,26 @@ jobs:
                     "desc":"Github action 执行完毕"
                 },
                 "emphasis_content":{
-                    "title": ${{ job.status }},
-                    "desc": ${{ github.workflow }} / ${{ github.repository }}
+                    "title": "${{ job.status }}",
+                    "desc": "${{ github.workflow }} / ${{ github.repository }}"
                 },
                 "sub_title_text":"workflow details",
                 "horizontal_content_list":[
                     {
                         "keyname": "build",
-                        "value": ${{ job.status }}
+                        "value": "${{ job.status }}"
                     }
                 ],
                 "jump_list":[
                     {
                         "type":1,
-                        "url": ${{ github.repository }},
+                        "url": "${{ github.repository }}",
                         "title":"Github Repo Link"
                     },
                 ],
                 "card_action":{
                     "type":1,
-                    "url":${{ github.repository }},
+                    "url": "${{ github.repository }}",
                 }
             }
         }'
