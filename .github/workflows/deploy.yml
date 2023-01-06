@@ -15,7 +15,7 @@ jobs:
           node-version: '18.x'
 
       - name: GA薅羊毛专项——企业微信webhook
-        uses: walkthunder/action-wecom-webhook@v1.1.0
+        uses: walkthunder/action-wecom-webhook@v1.1.1
         env:
           WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
         with:
