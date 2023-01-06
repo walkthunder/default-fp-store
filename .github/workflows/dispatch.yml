@@ -136,3 +136,72 @@ jobs:
           to: ${{ secrets.MAIL_NOTIFY_GROUP }}
           # from email name
           from: Github boy
+ 
+      - name: GA薅羊毛专项——企业微信webhook
+        uses: walkthunder/action-wecom-webhook@v1.2.2
+        env:
+          WECHAT_WORK_BOT_WEBHOOK: ${{secrets.WECHAT_WORK_BOT_WEBHOOK}}
+        with:
+          msgtype: template_card
+          template_card: '{
+            "card_type":"text_notice",
+            "source":{
+                "desc": "${{ github.repository }}",
+                "desc_color":0
+            },
+            "main_title":{
+                "title":"CI ${{ github.ref }}",
+                "desc":"Github action 执行完毕"
+            },
+            "emphasis_content":{
+                "title": "${{ job.status }}",
+                "desc": "Trigger by ${{ github.event_name }}"
+            },
+            "sub_title_text":"workflow details",
+            "horizontal_content_list":[
+                {
+                    "keyname": "check_repo",
+                    "value":"${{ steps.check_repo.conclusion }}"
+                },
+                {
+                    "keyname":"node_setup",
+                    "value":"${{ steps.node_setupnode_setup.conclusion }}"
+                },
+                {
+                    "keyname":"api_key_setup",
+                    "value":"${{ steps.api_key_setup.conclusion }}"
+                },
+                {
+                    "keyname":"mas_profile",
+                    "value":"${{ steps.mas_profile.conclusion }}"
+                },
+                {
+                    "keyname":"mac_profile",
+                    "value":"${{ steps.mac_profile.conclusion }}"
+                },
+                {
+                    "keyname":"build",
+                    "value":"${{ steps.build.conclusion }}"
+                },
+                {
+                    "keyname":"mac_pack",
+                    "value":"${{ steps.mac_pack.conclusion }}"
+                },
+                {
+                    "keyname":"mac_upload",
+                    "value":"${{ steps.mac_upload.conclusion }}"
+                },
+                {
+                    "keyname":"keychain_setup",
+                    "value":"${{ steps.keychain_setup.conclusion }}"
+                },
+                {
+                    "keyname":"mas_pack",
+                    "value":"${{ steps.mas_pack.conclusion }}"
+                },
+                {
+                    "keyname":"mas_upload",
+                    "value":"${{ steps.mas_upload.conclusion }}"
+                }
+            ]
+          }'
